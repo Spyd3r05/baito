@@ -5,8 +5,12 @@ export interface Opportunity {
   company: string;
   domain: string;
   location: string;
-  time: string;
+  time?: string;
   tags: string[];
   isNew: boolean;
   link: string;
+}
+
+export interface MyComponentProps {
+  initialOpportunities: Opportunity[];
 }

@@ -1,7 +1,9 @@
-import React from "react";
+import { getCachedAttachments } from "./action";
+import ClientPage from "./components/ClientPage";
 
-const Page = () => {
-  return <div>Page</div>;
+const Page = async () => {
+  const attachments = await getCachedAttachments();
+  return <ClientPage initialOpportunities={attachments} />;
 };
 
 export default Page;
