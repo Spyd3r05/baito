@@ -1,4 +1,5 @@
 "use server";
+import { unstable_cache } from "next/cache";
 
 export async function scrapeAttachments() {
   const companies = [
@@ -157,3 +158,10 @@ export async function scrapeAttachments() {
 
   return filteredOpportunities;
 }
+
+//use cached version in page.tsx. Persist data for 24 hours.
+export const getCachedAttachments = unstable_cache(
+  async () => await scrapeAttachments(),
+  ["attachments"],
+  { revalidate: 86400 },
+);
