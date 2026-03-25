@@ -1,7 +1,7 @@
 import { RefreshCw } from "lucide-react";
 
 interface ScrapeButtonProps {
-  handleScrape: () => void;
+  handleScrape: () => Promise<void>;
   isScraping: boolean;
 }
 const ScrapeButton = ({ handleScrape, isScraping }: ScrapeButtonProps) => {

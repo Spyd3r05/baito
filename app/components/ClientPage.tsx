@@ -2,6 +2,7 @@
 import { useState, useMemo } from "react";
 import { Opportunity } from "../types";
 import { getJobType } from "../utils";
+import { scrapeAttachments } from "../action";
 
 import { MyComponentProps } from "../types";
 import FilterSidebar from "./FilterSidebar";
@@ -9,6 +10,7 @@ import HeroSection from "./HeroSection";
 import NavBar from "./NavBar";
 import SearchBar from "./SearchBar";
 import JobCard from "./JobCard";
+import ScrapeButton from "./ScrapeButton";
 
 const ClientPage: React.FC<MyComponentProps> = ({ initialOpportunities }) => {
   const [allOpportunities, setAllOpportunities] =
@@ -27,6 +29,8 @@ const ClientPage: React.FC<MyComponentProps> = ({ initialOpportunities }) => {
     },
   );
   const [currentPage, setCurrentPage] = useState(0);
+  const [isScraping, setIsScraping] = useState(false);
+
   const pageSize = 10;
 
   const filteredOpportunities = useMemo(() => {
@@ -125,6 +129,32 @@ const ClientPage: React.FC<MyComponentProps> = ({ initialOpportunities }) => {
     setCurrentPage(0);
   };
 
+  //handle scraping
+  const handleScrape = async () => {
+    setIsScraping(true);
+    try {
+      const newData = await scrapeAttachments();
+      if (newData && newData.length > 0) {
+        setAllOpportunities(newData);
+        // Reset filters and pagination
+        setSearchQuery("");
+        setLocationQuery("");
+        setDateFilter("all");
+        setJobTypeFilters({
+          intern: true,
+          fulltime: true,
+          parttime: true,
+          freelance: true,
+        });
+        setCurrentPage(0);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsScraping(false);
+    }
+  };
+
   return (
     <>
       <div className="min-h-screen bg-gray-50 text-gray-900">
@@ -173,6 +203,8 @@ const ClientPage: React.FC<MyComponentProps> = ({ initialOpportunities }) => {
             </div>
           </div>
         </main>
+        {/* Scrape now button */}
+        <ScrapeButton handleScrape={handleScrape} isScraping={isScraping} />
       </div>
     </>
   );
