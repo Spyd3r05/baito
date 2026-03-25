@@ -112,6 +112,9 @@ const ClientPage: React.FC<MyComponentProps> = ({ initialOpportunities }) => {
   };
 
   const totalJobs = filteredOpportunities.length;
+  const hasMore = (currentPage + 1) * pageSize < totalJobs;
+
+  const handleLoadMore = () => setCurrentPage((prev) => prev + 1);
   const handleDateFilterChange = (filter: "all" | "24h" | "week" | "month") => {
     setDateFilter(filter);
     setCurrentPage(0);
