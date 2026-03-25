@@ -8,6 +8,7 @@ import FilterSidebar from "./FilterSidebar";
 import HeroSection from "./HeroSection";
 import NavBar from "./NavBar";
 import SearchBar from "./SearchBar";
+import JobCard from "./JobCard";
 
 const ClientPage: React.FC<MyComponentProps> = ({ initialOpportunities }) => {
   const [allOpportunities, setAllOpportunities] =
@@ -26,6 +27,7 @@ const ClientPage: React.FC<MyComponentProps> = ({ initialOpportunities }) => {
     },
   );
   const [currentPage, setCurrentPage] = useState(0);
+  const pageSize = 10;
 
   const filteredOpportunities = useMemo(() => {
     let filtered = [...allOpportunities];
@@ -97,6 +99,12 @@ const ClientPage: React.FC<MyComponentProps> = ({ initialOpportunities }) => {
     jobTypeFilters,
   ]);
 
+  //pagination
+  const paginatedOpportunities = useMemo(() => {
+    const end = (currentPage + 1) * pageSize;
+    return filteredOpportunities.slice(0, end);
+  }, [filteredOpportunities, currentPage]);
+
   const handleSearch = (query: string, location: string) => {
     setSearchQuery(query);
     setLocationQuery(location);
@@ -126,12 +134,41 @@ const ClientPage: React.FC<MyComponentProps> = ({ initialOpportunities }) => {
             Total Jobs <span className="font-bold text-black">{totalJobs}</span>{" "}
             job results
           </div>
-          <FilterSidebar
-            dateFilter={dateFilter}
-            onDateFilterChange={handleDateFilterChange}
-            jobTypeFilters={jobTypeFilters}
-            onJobTypeChange={handleJobTypeChange}
-          />
+          <div className="flex flex-col md:flex-row gap-8">
+            <aside className="md:w-1/4">
+              <FilterSidebar
+                dateFilter={dateFilter}
+                onDateFilterChange={handleDateFilterChange}
+                jobTypeFilters={jobTypeFilters}
+                onJobTypeChange={handleJobTypeChange}
+              />
+            </aside>
+
+            {/* Display job cards with pagination */}
+            <div className="md:w-3/4">
+              {paginatedOpportunities.length === 0 ? (
+                <div className="text-center py-12 text-gray-500 border-2 border-black bg-white p-8">
+                  No jobs found
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {paginatedOpportunities.map((opp) => (
+                    <JobCard key={opp.id} opportunity={opp} />
+                  ))}
+                  {hasMore && (
+                    <div className="flex justify-center mt-6">
+                      <button
+                        onClick={handleLoadMore}
+                        className="border-2 border-black bg-white text-black font-bold px-6 py-2.5 hover:bg-gray-100 transition-colors"
+                      >
+                        Load More Opportunities
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
         </main>
       </div>
     </>
