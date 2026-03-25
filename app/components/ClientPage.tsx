@@ -30,6 +30,24 @@ const ClientPage: React.FC<MyComponentProps> = ({ initialOpportunities }) => {
   const filteredOpportunities = useMemo(() => {
     let filtered = [...allOpportunities];
 
+    // Search by title or company
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (opp) =>
+          opp.title.toLowerCase().includes(query) ||
+          opp.company.toLowerCase().includes(query),
+      );
+    }
+
+    // Location filter
+    if (locationQuery.trim()) {
+      const loc = locationQuery.toLowerCase();
+      filtered = filtered.filter((opp) =>
+        opp.location.toLowerCase().includes(loc),
+      );
+    }
+
     // Date filter
     if (dateFilter !== "all") {
       const now = new Date();
@@ -79,6 +97,12 @@ const ClientPage: React.FC<MyComponentProps> = ({ initialOpportunities }) => {
     jobTypeFilters,
   ]);
 
+  const handleSearch = (query: string, location: string) => {
+    setSearchQuery(query);
+    setLocationQuery(location);
+    setCurrentPage(0);
+  };
+
   const totalJobs = filteredOpportunities.length;
   const handleDateFilterChange = (filter: "all" | "24h" | "week" | "month") => {
     setDateFilter(filter);
@@ -96,7 +120,7 @@ const ClientPage: React.FC<MyComponentProps> = ({ initialOpportunities }) => {
         <NavBar />
         <main className="pt-28 px-4 max-w-7xl mx-auto">
           <HeroSection />
-          <SearchBar onSearch={(query, location) => {}} />
+          <SearchBar onSearch={handleSearch} />
           {/* Total attachments scraped */}
           <div className="mt-6 mb-4 text-gray-700">
             Total Jobs <span className="font-bold text-black">{totalJobs}</span>{" "}
